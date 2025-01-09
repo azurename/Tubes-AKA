@@ -1,66 +1,62 @@
-import pandas as pd
 import random
-import numpy as np
+import string
 
-# Set random seed for reproducibility
-np.random.seed(42)
+def generate_random_names(n):
+    """Menghasilkan daftar nama acak sebanyak n."""
+    names = []
+    for _ in range(n):
+        name = ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase, k=5))
+        names.append(name)
+    return names
 
-# Initialize empty lists to store data
-data = []
+def menu():
+    print("\nTes Program AKA")
+    print("1. Function Iteratif")
+    print("2. Function Rekursif")
+    print("0. Keluar")
 
-# Class distribution
-class_distribution = {
-    'DS 50 01': 40,
-    'DS 50 02': 44,
-    'DS 50 03': 41,
-    'DS 50 04': 45,
-    'DS 50 05': 45,
-    'DS 50 06': 43,
-    'DS 50 07': 42
-}
+def count_arrangements_iterative(n, k):
+    dp = [0] * (n + 1)
+    dp[0] = 1
+    for i in range(1, n + 1):
+        for j in range(min(i, k), 0, -1):
+            dp[i] += dp[i - j]
+    return dp[n]
 
-# Wali kelas mapping
-wali_kelas_mapping = {
-    'DS 50 01': 'AOK',
-    'DS 50 02': 'AOK',
-    'DS 50 03': 'VCA',
-    'DS 50 04': 'DBA',
-    'DS 50 05': 'DBA',
-    'DS 50 06': 'NAA',
-    'DS 50 07': 'NAA'
-}
+def count_arrangements_recursive(n, k):
+    if n == 0 or k == 0:
+        return 1
+    return count_arrangements_recursive(n - 1, k) + count_arrangements_recursive(n - 1, k - 1)
 
-# Generate base NIM (will increment for each student)
-base_nim = 130592490001
+def main():
+    while True:
+        menu()
+        choice = input("Pilih opsi: ")
+        if choice == "1":
+            try:
+                n = int(input("Masukkan jumlah kursi (n): "))
+                k = int(input("Masukkan ukuran maksimum kelompok (k): "))
+                random_names = generate_random_names(n)
+                print(f"Nama-nama acak: {random_names[:10]}...")  # Tampilkan sebagian untuk mempermudah
+                result = count_arrangements_iterative(n, k)
+                print(f"Hasil (Iteratif): {result}")
+            except ValueError:
+                print("Harap masukkan angka yang valid!")
+        elif choice == "2":
+            try:
+                n = int(input("Masukkan jumlah kursi (n): "))
+                k = int(input("Masukkan ukuran maksimum kelompok (k): "))
+                random_names = generate_random_names(n)
+                print(f"Nama-nama acak: {random_names[:10]}...")  # Tampilkan sebagian untuk mempermudah
+                result = count_arrangements_recursive(n, k)
+                print(f"Hasil (Rekursif): {result}")
+            except ValueError:
+                print("Harap masukkan angka yang valid!")
+        elif choice == "0":
+            print("Keluar dari program.")
+            break
+        else:
+            print("Pilihan tidak valid, coba lagi.")
 
-# Generate data for each class
-for kelas, jumlah in class_distribution.items():
-    for _ in range(jumlah):
-        nim = str(base_nim)
-        jenis_kelamin = random.choice(['L', 'P'])
-        kode_wali = wali_kelas_mapping[kelas]
-        nilai = random.randint(60, 100)  # Generate random nilai between 60-100
-        
-        # Add record to data list
-        data.append({
-            'NIM': nim,
-            'Jenis_Kelamin': jenis_kelamin,
-            'Kelas': kelas,
-            'Kode_Wali_Kelas': kode_wali,
-            'Kode_Mata_Kuliah': 'STD11',
-            'Nilai_Mata_Kuliah': nilai
-        })
-        
-        base_nim += 1
-
-# Create DataFrame
-df = pd.DataFrame(data)
-
-# Save to CSV
-df.to_csv('data_mahasiswaa.csv', index=False)
-
-# Display first few rows
-print(df.head())
-print("\nTotal records:", len(df))
-print("\nDistribution of students per class:")
-print(df['Kelas'].value_counts().sort_index())
+if __name__ == "__main__":
+    main()
